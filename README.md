@@ -18,4 +18,4 @@ From the directory with the files in run:-
 `ansible-playbook nvim-playbook.yml -i inventory.txt --ask-become-pass `
 
 ######################################################################
-<img src="https://raw.githubusercontent.com/mcdent/Ansible-nvim-repo/edit/main/screenshot1.jpg" height="450">
+<img src="https://raw.githubusercontent.com/mcdent/Ansible-nvim-repo/main/screenshot1.jpg" height="450">
