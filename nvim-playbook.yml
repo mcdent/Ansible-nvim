@@ -1,0 +1,107 @@
+########################################################################
+# This Ansible playbook is designed to be run against a pretty much vanilla
+# Oracle Linux 9 install. It will install Neovim, including pre-requisites
+# such as Snap,ripgrep etc. It copies over a samle init.vim config files,
+# which includes some plugins. You will need to install these on the first run
+# of Neovim, by hitting ESC :PlugInstall .
+# an alias is added to your .bashrc file to run Neovim as 'vi'.
+# It assumnes you have an account setup on the target hosts, with the same
+# login as the machine you run the script on. You will need to provide the
+# root password when you run the script as some parts of the script require
+# root privs.
+# 
+#
+# From the directory with the files in run:-
+#
+# ansible-playbook nvim-playbook.yml -i inventory.txt --ask-become-pass 
+#
+########################################################################
+-
+  name: 'Attempt to setup a neovim environment, including plugins and colours'
+# replace 'target1' with the hosts/group you wish to install on to. These
+# are defined in the inventory.txt file.
+  hosts: target2 
+  tasks:
+  - name: Install the epel-release package (keys, repo etc reqd for snapd)
+    become: yes
+    ansible.builtin.yum:
+      name: epel-release
+      state: latest
+####################################
+  - name: Install snapd package
+    become: yes
+    ansible.builtin.yum:
+      name: snapd
+      state: latest
+
+####################################
+  - name: Make sure snapd is running
+    become: yes
+    ansible.builtin.systemd:
+      state: started
+      name: snapd.socket
+
+####################################
+  - name: Create a symbolic link from /snap pointing to /var/lib/snapd/snap
+    become: yes
+    ansible.builtin.file:
+      src: /var/lib/snapd/snap
+      dest: /snap
+      owner: root
+      group: root
+      state: link
+        
+####################################
+# Install neovim and ripgrep snaps.
+  - name: Install neovim and ripgrep snaps
+    become: yes
+    snap:
+      name:
+        - nvim
+        - ripgrep
+      classic: yes
+####################################
+  - name: Create directory for neovim rc file 
+    ansible.builtin.file:
+      path: ~/.config/nvim
+      state: directory
+      mode: '0755'
+####################################
+  - name: Copy over the init.vim file
+    ansible.builtin.copy:
+      src: ./init.vim 
+      dest: ~/.config/nvim/init.vim 
+      mode: '0644'
+####################################
+  - name: Add an alis for vi to point to nvim. 
+    ansible.builtin.lineinfile:
+      path: ~/.bashrc 
+      line: alias vi=/var/lib/snapd/snap/bin/nvim
+      create: yes
+####################################
+  - name: Create directory for plugin below.
+    ansible.builtin.file:
+      path: ~/.local/share/nvim/site/autoload
+      state: directory
+      mode: '0755'
+####################################
+  - name: Download the vim-plug plugin manager. 
+    ansible.builtin.get_url:
+      url: https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim 
+      dest: ~/.local/share/nvim/site/autoload/plug.vim 
+      mode: '0644'
+####################################
+  - name: Install git tools, seems this is required for some of the neovim plugins
+    become: yes
+    ansible.builtin.dnf:
+      name: git 
+      state: latest
+####################################
+  - name: Prints two lines of messages, but only if there is an environment value set
+    ansible.builtin.debug:
+      msg:
+      - "#################################################################### "
+      - "Neovim has been installed and an alias set to call it from 'vi'. "
+      - "You will need to logout/in or run 'source ~/.bashrc' on the destination host(s)"
+      - "When you first run 'vi' , load the plugins with :PlugInstall ."
+      - "#################################################################### "
