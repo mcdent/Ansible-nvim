@@ -1,5 +1,5 @@
 # Ansible-nvim
-#######################################################################
+***
 This Ansible playbook is designed to be run against a pretty much vanilla
 Oracle Linux 9 install. It will install Neovim, including pre-requisites
 such as Snap,ripgrep etc. It copies over a samle init.vim config files,
@@ -16,5 +16,5 @@ root privs.
 From the directory with the files in run:-
 
 `ansible-playbook nvim-playbook.yml -i inventory.txt --ask-become-pass `
+***
 
-######################################################################
