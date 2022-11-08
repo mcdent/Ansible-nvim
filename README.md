@@ -9,7 +9,7 @@ an alias is added to your `.bashrc` file to run Neovim as 'vi'.
 It assumnes you have an account setup on the target hosts, with the same
 login as the machine you run the script on. You will need to provide the
 root password when you run the script as some parts of the script require
-root privs.
+root privs..
   
  
 From the directory with the files in run:-
