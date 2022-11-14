@@ -2,7 +2,7 @@
 ***
 This Ansible playbook is designed to be run against a pretty much vanilla
 Oracle Linux 9 install. It will install Neovim, including pre-requisites
-such as Snap,ripgrep etc. It copies over a samle init.vim config files,
+such as Snap,ripgrep etc. It copies over a sample init.vim config files,
 which includes some plugins. You will need to install these on the first run
 of Neovim, by hitting ESC `:PlugInstall` .
 an alias is added to your `.bashrc` file to run Neovim as 'vi'.
